@@ -50,10 +50,12 @@ CALL KitapEkle("One Hundred Years of Solitude", "Gabriel Garcia Marquez", "roman
 DROP PROCEDURE IF EXISTS OduncKitapVer;
 DELIMITER //
 
+-- OduncKitapVer Prosedürü
 CREATE PROCEDURE OduncKitapVer(
     IN p_KitapAd VARCHAR(100),
     IN p_MusteriAd VARCHAR(50),
     IN p_MusteriSoyad VARCHAR(50),
+    IN p_MusteriTelefon VARCHAR(20),
     IN p_OduncTarihi DATE,
     IN p_TeslimTarihi DATE
 )
@@ -63,7 +65,7 @@ BEGIN
     DECLARE v_KitapDurum TINYINT;
 
     -- Müşteriyi kontrol et ve ekle
-    INSERT IGNORE INTO Musteriler (Ad, Soyad) VALUES (p_MusteriAd, p_MusteriSoyad);
+    INSERT IGNORE INTO Musteriler (Ad, Soyad, Telefon) VALUES (p_MusteriAd, p_MusteriSoyad, p_MusteriTelefon);
     SELECT MusteriID INTO v_MusteriID FROM Musteriler WHERE Ad = p_MusteriAd AND Soyad = p_MusteriSoyad LIMIT 1;
 
     -- Kitabı kontrol et ve ID'sini ve durumunu al
@@ -90,15 +92,10 @@ BEGIN
     
 END //
 
-DELIMITER ;
-
-
-call OduncKitapVer("Suç ve Ceza","ömer","aydin","20221112","20231212")
-
--- Kitap Teslim Et Procedure
-
-DROP PROCEDURE IF EXISTS KitapTeslimEt;
+CALL OduncKitapVer('Suç ve Ceza', 'Ömer', 'Aydın', '5551234567', '2023-01-01', '2023-02-01');
 DELIMITER //
+
+-- KitapTeslimEt Prosedürü
 CREATE PROCEDURE KitapTeslimEt(
     IN p_KitapAd VARCHAR(100),
     IN p_TeslimTarihi DATE
@@ -128,7 +125,9 @@ BEGIN
         SET MESSAGE_TEXT = 'Belirtilen kitap ödünçte değil veya bulunamadı.';
     END IF;
 END //
+
 DELIMITER ;
+
 
 
 call KitapTeslimEt("Suç ve Ceza","20240112")

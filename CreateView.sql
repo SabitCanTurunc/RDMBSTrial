@@ -10,12 +10,12 @@ INNER JOIN Yazarlar ON Kitaplar.YazarID = Yazarlar.YazarID;
 
 SELECT * FROM VW_TumKitaplar;
 
-
 CREATE VIEW VW_OdunctekiKitaplar AS
 SELECT 
    OduncKitaplar.OduncID,
    Kitaplar.Baslik,
    Musteriler.Ad AS MusteriAdi,
+   Musteriler.Telefon,
    OduncKitaplar.OduncTarihi,
    OduncKitaplar.TeslimTarihi
 FROM OduncKitaplar
@@ -24,7 +24,6 @@ INNER JOIN Musteriler ON OduncKitaplar.MusteriID = Musteriler.MusteriID
 WHERE OduncKitaplar.Durum = 1; -- Ödünçteki kitaplar
 
 SELECT * FROM VW_OdunctekiKitaplar;
-
 
 
 CREATE VIEW VW_AktifKategoriler AS
@@ -44,10 +43,11 @@ SELECT
    Musteriler.MusteriID,
    Musteriler.Ad,
    Musteriler.Soyad,
+   Musteriler.Telefon,
    COUNT(OduncKitaplar.OduncID) AS OduncSayisi
 FROM Musteriler
 LEFT JOIN OduncKitaplar ON Musteriler.MusteriID = OduncKitaplar.MusteriID
-GROUP BY Musteriler.MusteriID, Musteriler.Ad, Musteriler.Soyad
+GROUP BY Musteriler.MusteriID, Musteriler.Ad, Musteriler.Soyad, Musteriler.Telefon
 ORDER BY OduncSayisi DESC; 
 
 

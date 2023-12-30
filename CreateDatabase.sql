@@ -10,7 +10,8 @@ Ad varchar(50) UNIQUE NOT NULL
 CREATE TABLE Musteriler (
     MusteriID INT  PRIMARY KEY,
     Ad VARCHAR(50) NOT NULL,
-    Soyad VARCHAR(50) NOT NULL
+    Soyad VARCHAR(50) NOT NULL,
+	Telefon VARCHAR(20) NOT NULL UNIQUE
 );
 
 CREATE TABLE Kategoriler (

@@ -24,8 +24,8 @@ DELIMITER ;
 
 
 
-SELECT KontrolKitapDurumu("Sefiller") AS Durum;
 
+SELECT KontrolKitapDurumu("Suç ve Ceza") AS Durum;
 DELIMITER //
 
 CREATE FUNCTION GetKategoriByKitap(KitapAdi VARCHAR(100)) RETURNS VARCHAR(50) DETERMINISTIC
@@ -43,6 +43,7 @@ BEGIN
 END//
 
 DELIMITER ;
+
 
 
 
