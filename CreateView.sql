@@ -1,3 +1,5 @@
+-- view and masking
+
 USE kutuphane;
 CREATE VIEW VW_TumKitaplar AS
 SELECT 
@@ -64,4 +66,16 @@ LEFT JOIN Yazarlar ON Kitaplar.YazarID = Yazarlar.YazarID
 WHERE OduncKitaplar.KitapID IS NULL OR OduncKitaplar.Durum = 0;
 
 SELECT * FROM VW_AktifOduncAlinabilecekKitaplar;
+
+CREATE VIEW VW_MusterilerMaskeleme AS
+SELECT
+    MusteriID,
+    Ad,
+    Soyad,
+    CONCAT('XXX-XXX-', RIGHT(Telefon, 4)) AS MaskeTelefon
+FROM
+    Musteriler;
+    
+SELECT * FROM VW_MusterilerMaskeleme;
+
 
