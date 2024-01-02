@@ -1,6 +1,6 @@
--- view and masking
-
 USE kutuphane;
+
+-- Tüm Kitaplar View
 CREATE VIEW VW_TumKitaplar AS
 SELECT 
    Kitaplar.KitapID,
@@ -9,25 +9,21 @@ SELECT
 FROM Kitaplar
 INNER JOIN Yazarlar ON Kitaplar.YazarID = Yazarlar.YazarID;
 
-
-SELECT * FROM VW_TumKitaplar;
-
+-- Odünçteki Kitaplar View
 CREATE VIEW VW_OdunctekiKitaplar AS
 SELECT 
    OduncKitaplar.OduncID,
    Kitaplar.Baslik,
-   Musteriler.Ad AS MusteriAdi,
-   Musteriler.Telefon,
+   Users.Ad AS MusteriAdi,
+   Users.Telefon,
    OduncKitaplar.OduncTarihi,
    OduncKitaplar.TeslimTarihi
 FROM OduncKitaplar
 INNER JOIN Kitaplar ON OduncKitaplar.KitapID = Kitaplar.KitapID
-INNER JOIN Musteriler ON OduncKitaplar.MusteriID = Musteriler.MusteriID
+INNER JOIN Users ON OduncKitaplar.UserID = Users.UserID
 WHERE OduncKitaplar.Durum = 1; -- Ödünçteki kitaplar
 
-SELECT * FROM VW_OdunctekiKitaplar;
-
-
+-- Aktif Kategoriler View
 CREATE VIEW VW_AktifKategoriler AS
 SELECT 
    Kategoriler.KategoriID,
@@ -37,24 +33,20 @@ INNER JOIN KitapKategorileri ON Kategoriler.KategoriID = KitapKategorileri.Kateg
 GROUP BY Kategoriler.KategoriID, Kategoriler.Ad
 HAVING COUNT(KitapKategorileri.KitapID) > 0;
 
-SELECT * FROM VW_AktifKategoriler;
-
-
+-- En Çok Ödünç Alan Müşteriler View
 CREATE VIEW VW_EnCokOduncAlanMusteriler AS
 SELECT 
-   Musteriler.MusteriID,
-   Musteriler.Ad,
-   Musteriler.Soyad,
-   Musteriler.Telefon,
+   Users.UserID,
+   Users.Ad,
+   Users.Soyad,
+   Users.Telefon,
    COUNT(OduncKitaplar.OduncID) AS OduncSayisi
-FROM Musteriler
-LEFT JOIN OduncKitaplar ON Musteriler.MusteriID = OduncKitaplar.MusteriID
-GROUP BY Musteriler.MusteriID, Musteriler.Ad, Musteriler.Soyad, Musteriler.Telefon
+FROM Users
+LEFT JOIN OduncKitaplar ON Users.UserID = OduncKitaplar.UserID
+GROUP BY Users.UserID, Users.Ad, Users.Soyad, Users.Telefon
 ORDER BY OduncSayisi DESC; 
 
-
-SELECT * FROM VW_EnCokOduncAlanMusteriler;
-
+-- Aktif Ödünç Alınabilecek Kitaplar View
 CREATE VIEW VW_AktifOduncAlinabilecekKitaplar AS
 SELECT
    Kitaplar.KitapID,
@@ -65,17 +57,29 @@ LEFT JOIN OduncKitaplar ON Kitaplar.KitapID = OduncKitaplar.KitapID AND OduncKit
 LEFT JOIN Yazarlar ON Kitaplar.YazarID = Yazarlar.YazarID
 WHERE OduncKitaplar.KitapID IS NULL OR OduncKitaplar.Durum = 0;
 
-SELECT * FROM VW_AktifOduncAlinabilecekKitaplar;
-
+-- Müşteriler Maskeleme View
 CREATE VIEW VW_MusterilerMaskeleme AS
 SELECT
-    MusteriID,
-    Ad,
-    Soyad,
-    CONCAT('XXX-XXX-', RIGHT(Telefon, 4)) AS MaskeTelefon
+    Users.UserID AS MusteriID,
+    Users.Ad,
+    Users.Soyad,
+    CONCAT('XXX-XXX-', RIGHT(Users.Telefon, 4)) AS MaskeTelefon
 FROM
-    Musteriler;
-    
+    Users;
+
+
+-- Tüm Kitaplar View'ı çağırma
+SELECT * FROM VW_TumKitaplar;
+-- Ödünçteki Kitaplar View'ı çağırma
+SELECT * FROM VW_OdunctekiKitaplar;
+-- Aktif Kategoriler View'ı çağırma
+SELECT * FROM VW_AktifKategoriler;
+-- En Çok Ödünç Alan Müşteriler View'ı çağırma
+-- Aktif Ödünç Alınabilecek Kitaplar View'ı çağırma
+SELECT * FROM VW_AktifOduncAlinabilecekKitaplar;
+-- Müşteriler Maskeleme View'ı çağırma
 SELECT * FROM VW_MusterilerMaskeleme;
+
+
 
 

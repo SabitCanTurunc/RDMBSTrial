@@ -45,6 +45,8 @@ END//
 DELIMITER ;
 
 
+-- KontrolKitapDurumu fonksiyonunu çağırma
+SELECT KontrolKitapDurumu('Beyaz Diş') AS Durum;
 
 
 SELECT GetKategoriByKitap('Suç ve Ceza') AS Kategori;

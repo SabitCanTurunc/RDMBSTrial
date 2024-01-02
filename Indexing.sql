@@ -1,25 +1,22 @@
--- ındexleme
 use kutuphane;
--- Yazarlar tablosunda Ad sütununu indeksleme
-CREATE INDEX idx_ad ON Yazarlar(Ad);
+-- Email sütunu için UNIQUE indeksleme ekleniyor.
+CREATE UNIQUE INDEX idx_Users_Email ON Users(Email);
 
--- Musteriler tablosunda Ad ve Soyad sütunlarını içeren bir indeks oluşturma
-CREATE INDEX idx_ad_soyad ON Musteriler(Ad, Soyad);
+-- Telefon sütunu için UNIQUE indeksleme ekleniyor.
+CREATE UNIQUE INDEX idx_Users_Telefon ON Users(Telefon);
 
--- Kitaplar tablosunda Baslik sütununu indeksleme
-CREATE INDEX idx_baslik ON Kitaplar(Baslik);
+-- YazarID sütunu için indeksleme ekleniyor.
+CREATE INDEX idx_Kitaplar_YazarID ON Kitaplar(YazarID);
 
--- Kitaplar tablosunda YazarID sütununu indeksleme
-CREATE INDEX idx_yazar_id ON Kitaplar(YazarID);
+-- KitapID sütunu için indeksleme ekleniyor.
+CREATE INDEX idx_KitapKategorileri_KitapID ON KitapKategorileri(KitapID);
 
--- KitapKategorileri tablosunda KitapID ve KategoriID sütunlarını içeren bir bileşik indeks oluşturma
-CREATE INDEX idx_kitap_kategorileri ON KitapKategorileri(KitapID, KategoriID);
+-- KategoriID sütunu için indeksleme ekleniyor.
+CREATE INDEX idx_KitapKategorileri_KategoriID ON KitapKategorileri(KategoriID);
 
--- OduncKitaplar tablosunda MusteriID, KitapID ve OduncTarihi sütunlarını içeren bir bileşik indeks oluşturma
-CREATE INDEX idx_odunc_kitaplar ON OduncKitaplar(MusteriID, KitapID, OduncTarihi);
+-- UserID sütunu için indeksleme ekleniyor.
+CREATE INDEX idx_OduncKitaplar_UserID ON OduncKitaplar(UserID);
 
--- OduncKitaplar tablosunda TeslimTarihi sütununu indeksleme
-CREATE INDEX idx_teslim_tarihi ON OduncKitaplar(TeslimTarihi);
+-- KitapID sütunu için indeksleme ekleniyor.
+CREATE INDEX idx_OduncKitaplar_KitapID ON OduncKitaplar(KitapID);
 
--- OduncKitaplar tablosunda Durum sütununu indeksleme
-CREATE INDEX idx_durum ON OduncKitaplar(Durum);

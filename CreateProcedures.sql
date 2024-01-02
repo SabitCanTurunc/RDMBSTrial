@@ -1,5 +1,12 @@
 -- Kitap Ekle Procedure
+
+
+-- Kitap Ekle Procedure
 DROP PROCEDURE IF EXISTS KitapEkle;
+
+
+
+
 DELIMITER //
 CREATE PROCEDURE KitapEkle(
     IN p_Baslik VARCHAR(100),
@@ -24,7 +31,7 @@ BEGIN
     -- Kitabı kontrol et, eğer varsa tekrar ekleme
     IF NOT EXISTS (SELECT 1 FROM Kitaplar WHERE Baslik = p_Baslik AND YazarID = v_YazarID) THEN
         -- Kitabı ekle
-        INSERT INTO Kitaplar (Baslik, YazarID, Durum) VALUES (p_Baslik, v_YazarID, False);
+        INSERT INTO Kitaplar (Baslik, YazarID, Durum) VALUES (p_Baslik, v_YazarID, FALSE);
         SELECT LAST_INSERT_ID() INTO v_KitapID;
 
         -- Kitap-Kategori ilişkisini ekle
@@ -32,7 +39,6 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
-
 
 -- Kitap Ekle Procedure
 CALL KitapEkle("Beyaz Diş", "Jack London", "roman");
@@ -46,27 +52,25 @@ CALL KitapEkle("To Kill a Mockingbird", "Harper Lee", "roman");
 CALL KitapEkle("Satranç", "Stefan Zweig", "roman");
 CALL KitapEkle("One Hundred Years of Solitude", "Gabriel Garcia Marquez", "roman");
 
--- Odunc Kitap Ver Procedure
-DROP PROCEDURE IF EXISTS OduncKitapVer;
-DELIMITER //
 
+DELIMITER //
 -- OduncKitapVer Prosedürü
 CREATE PROCEDURE OduncKitapVer(
     IN p_KitapAd VARCHAR(100),
-    IN p_MusteriAd VARCHAR(50),
-    IN p_MusteriSoyad VARCHAR(50),
-    IN p_MusteriTelefon VARCHAR(20),
+    IN p_UserID INT,
     IN p_OduncTarihi DATE,
     IN p_TeslimTarihi DATE
 )
 BEGIN
-    DECLARE v_MusteriID INT;
+    DECLARE v_UserID INT;
     DECLARE v_KitapID INT;
     DECLARE v_KitapDurum TINYINT;
 
-    -- Müşteriyi kontrol et ve ekle
-    INSERT IGNORE INTO Musteriler (Ad, Soyad, Telefon) VALUES (p_MusteriAd, p_MusteriSoyad, p_MusteriTelefon);
-    SELECT MusteriID INTO v_MusteriID FROM Musteriler WHERE Ad = p_MusteriAd AND Soyad = p_MusteriSoyad LIMIT 1;
+    -- Kullanıcıyı kontrol et
+    IF NOT EXISTS (SELECT 1 FROM Users WHERE UserID = p_UserID) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Belirtilen kullanıcı bulunamadı.';
+    END IF;
 
     -- Kitabı kontrol et ve ID'sini ve durumunu al
     SELECT KitapID, Durum INTO v_KitapID, v_KitapDurum FROM Kitaplar WHERE Baslik = p_KitapAd;
@@ -84,50 +88,55 @@ BEGIN
     END IF;
 
     -- OduncKitaplar tablosuna ekle
-    INSERT INTO OduncKitaplar (MusteriID, KitapID, OduncTarihi, TeslimTarihi, Durum)
-    VALUES (v_MusteriID, v_KitapID, p_OduncTarihi, p_TeslimTarihi, 1); -- 1: True (Odunc durumu)
+    INSERT INTO OduncKitaplar (UserID, KitapID, OduncTarihi, TeslimTarihi, Durum)
+    VALUES (p_UserID, v_KitapID, p_OduncTarihi, p_TeslimTarihi, 1); -- 1: True (Odunc durumu)
 
     -- Kitaplar tablosundaki durumu güncelle
     UPDATE Kitaplar SET Durum = 1 WHERE KitapID = v_KitapID;
     
 END //
 
-CALL OduncKitapVer('Suç ve Ceza', 'Ömer', 'Aydın', '5551234567', '2023-01-01', '2023-02-01');
-DELIMITER //
+
+-- Örnek OduncKitapVer çağrısı
+CALL OduncKitapVer('Suç ve Ceza', 1, '2023-01-01', '2023-02-01');
+
+
+
+
 
 -- KitapTeslimEt Prosedürü
+
+DELIMITER //
+
 CREATE PROCEDURE KitapTeslimEt(
     IN p_KitapAd VARCHAR(100),
     IN p_TeslimTarihi DATE
 )
 BEGIN
-    DECLARE v_KitapDurum TINYINT;
-    DECLARE v_MusteriID INT;
+    DECLARE v_KitapDurum BOOL;
+    DECLARE v_UserID INT;
     DECLARE v_KitapID INT;
 
-    -- Kitap durumunu kontrol et ve müşteri ID'sini al
-    SELECT o.Durum, o.MusteriID, o.KitapID INTO v_KitapDurum, v_MusteriID, v_KitapID
+    -- Kitap durumunu kontrol et ve kullanıcı ID'sini al
+    SELECT o.Durum, o.UserID, o.KitapID INTO v_KitapDurum, v_UserID, v_KitapID
     FROM OduncKitaplar o
     JOIN Kitaplar k ON o.KitapID = k.KitapID
-    WHERE k.Baslik = p_KitapAd AND o.Durum = 1
+    WHERE k.Baslik = p_KitapAd AND o.Durum = TRUE
     LIMIT 1; -- Yalnızca bir satır al
 
-    -- Eğer kitap ödünçteyse (Durum = 1), teslim tarihini güncelle ve Durum'u 0 olarak ayarla
-    IF v_KitapDurum = 1 THEN
+    -- Eğer kitap ödünçteyse (Durum = TRUE), teslim tarihini güncelle ve Durum'u FALSE olarak ayarla
+    IF v_KitapDurum THEN
         UPDATE OduncKitaplar
-        SET TeslimTarihi = p_TeslimTarihi, Durum = 0
+        SET TeslimTarihi = p_TeslimTarihi, Durum = FALSE
         WHERE KitapID = v_KitapID AND OduncTarihi <= p_TeslimTarihi; -- Güvenli WHERE şartı
 
         -- Kitaplar tablosundaki durumu güncelle
-        UPDATE Kitaplar SET Durum = 0 WHERE KitapID = v_KitapID;
+        UPDATE Kitaplar SET Durum = FALSE WHERE KitapID = v_KitapID;
     ELSE
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Belirtilen kitap ödünçte değil veya bulunamadı.';
     END IF;
 END //
-
 DELIMITER ;
 
-
-
-call KitapTeslimEt("Suç ve Ceza","20240112")
+call KitapTeslimEt('Suç ve Ceza','20231222')
