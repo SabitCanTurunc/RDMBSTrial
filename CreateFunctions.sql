@@ -45,7 +45,7 @@ END//
 DELIMITER ;
 
 
--- KontrolKitapDurumu fonksiyonunu çağırma
+-- ornek cagrilar
 SELECT KontrolKitapDurumu('Beyaz Diş') AS Durum;
 
 

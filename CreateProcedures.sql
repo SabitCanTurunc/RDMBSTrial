@@ -40,18 +40,6 @@ BEGIN
 END //
 DELIMITER ;
 
--- Kitap Ekle Procedure
-CALL KitapEkle("Beyaz Diş", "Jack London", "roman");
-CALL KitapEkle("Suç ve Ceza", "Fyodor Dostoyevsky", "roman");
-CALL KitapEkle("1984", "George Orwell", "bilim kurgu");
-CALL KitapEkle("Sefiller", "Victor Hugo", "roman");
-CALL KitapEkle("Küçük Kadınlar", "Louisa May Alcott", "roman");
-CALL KitapEkle("Kayıp Zamanın İzinde", "Marcel Proust", "roman");
-CALL KitapEkle("Yeraltından Notlar", "Fyodor Dostoyevsky", "roman");
-CALL KitapEkle("To Kill a Mockingbird", "Harper Lee", "roman");
-CALL KitapEkle("Satranç", "Stefan Zweig", "roman");
-CALL KitapEkle("One Hundred Years of Solitude", "Gabriel Garcia Marquez", "roman");
-
 
 DELIMITER //
 -- OduncKitapVer Prosedürü
@@ -97,12 +85,6 @@ BEGIN
 END //
 
 
--- Örnek OduncKitapVer çağrısı
-CALL OduncKitapVer('Suç ve Ceza', 1, '2023-01-01', '2023-02-01');
-
-
-
-
 
 -- KitapTeslimEt Prosedürü
 
@@ -139,4 +121,22 @@ BEGIN
 END //
 DELIMITER ;
 
-call KitapTeslimEt('Suç ve Ceza','20231222')
+
+
+
+-- ornek cagrilar
+CALL KitapEkle("Beyaz Diş", "Jack London", "roman");
+CALL KitapEkle("Suç ve Ceza", "Fyodor Dostoyevsky", "roman");
+CALL KitapEkle("1984", "George Orwell", "bilim kurgu");
+CALL KitapEkle("Sefiller", "Victor Hugo", "roman");
+CALL KitapEkle("Küçük Kadınlar", "Louisa May Alcott", "roman");
+CALL KitapEkle("Kayıp Zamanın İzinde", "Marcel Proust", "roman");
+CALL KitapEkle("Yeraltından Notlar", "Fyodor Dostoyevsky", "roman");
+CALL KitapEkle("To Kill a Mockingbird", "Harper Lee", "roman");
+CALL KitapEkle("Satranç", "Stefan Zweig", "roman");
+CALL KitapEkle("One Hundred Years of Solitude", "Gabriel Garcia Marquez", "roman");
+
+
+CALL OduncKitapVer('Suç ve Ceza', 1, '2023-01-01', '2023-02-01');
+
+CALL KitapTeslimEt('Suç ve Ceza','20231222');

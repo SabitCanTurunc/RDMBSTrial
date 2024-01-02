@@ -68,6 +68,8 @@ FROM
     Users;
 
 
+-- ornek cagrilar
+
 -- Tüm Kitaplar View'ı çağırma
 SELECT * FROM VW_TumKitaplar;
 -- Ödünçteki Kitaplar View'ı çağırma
